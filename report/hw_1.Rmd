@@ -1,0 +1,406 @@
+---
+title: "Econometrics I: Assignment 1"
+author: "Daisy Song"
+date: "Date Due: 09/03/2025"
+output: pdf_document
+header-includes:
+  - \usepackage{mathtools}
+  - \usepackage{bm}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE, 
+    out.width = '100%', 
+    fig.width=4, 
+    fig.height=4
+    )
+library(ggplot2)
+library(tinytex)
+library(scatterplot3d)
+library(carData)
+```
+
+## Problem 1(a)
+
+ Let $\bm{x}'=\begin{bmatrix} 5 & 1 & 3 \end{bmatrix}$ and $\bm{y}'=\begin{bmatrix} -1 & 3 & 1 \end{bmatrix}$.
+    
+\begin{itemize}
+    \item[i.] Graph the two vectors.
+    \item[ii.] Find (i) the length of $\bm{x}$, (ii) the angle between $\bm{x}$ and $\bm{y}$, and (iii) the projection $\bm{y}$ on $\bm{x}$.
+    \item[iii.] Since $\bar{x}=3$ and $\bar{y}=1$, graph the centered vectors.  (Hint: You can center the vector by subtracting the mean from each element: $\bm{x}^*=\bm{x}-\bar{x} \bm{\iota}$, where $\bm{\iota}'=\begin{bmatrix}1 & 1 & 1\end{bmatrix}$.)
+    \item[iv.] In words describe how does recentering effect the relationship of the vectors?
+\end{itemize}
+
+## Solution 1(a)
+### i. Graph the two vectors.
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+x <- c(5, 1, 3)
+y <- c(-1, 3, 1)
+# set axis limits to cover both vectors
+lim <- 
+    range(
+        c( # nolint
+            0, 
+            x, 
+            y
+        )
+    ) 
+
+    s3d <- 
+        scatterplot3d(
+            0,
+            0,
+            0, 
+            xlim = lim, 
+            ylim = lim, 
+            zlim = lim,
+            xlab="X", 
+            ylab="Y", 
+            zlab="Z", 
+            pch = "",    # reduce tick label size
+            cex.lab = 0.35,  # reduce axis label size
+            cex.axis = 0.35  # reduce axis tick size
+        )
+# add vector x (blue)
+s3d$points3d(
+    c(0, x[1]), 
+    c(0, x[2]), 
+    c(0, x[3]), 
+    type="l", 
+    col="blue", 
+    lwd=1
+)
+
+# add vector y (red)
+s3d$points3d(
+    c(0, y[1]), 
+    c(0, y[2]), 
+    c(0, y[3]), 
+    type="l", 
+    col="red", 
+    lwd=1
+)
+```
+
+### ii.
+
+The length of x: $\sqrt{25 + 1 + 9} = \sqrt{35}$
+
+The angle between x and y: $\cos(\theta) = \frac{x \cdot y}{\lVert x \rVert \lVert y \rVert} = \frac{-5 + 3 + 3}{\sqrt{35} \sqrt{11}} = \frac{1}{\sqrt{35 \cdot 11}} \implies \theta = \cos^{-1}\left(\frac{1}{\sqrt{35 \cdot 11}}\right)$
+
+The projection of y onto x: $\text{proj}_x y = \frac{x \cdot y}{\lVert x \rVert^2} x = \frac{1}{35} \begin{bmatrix} 5 \\ 1 \\ 3 \end{bmatrix}$
+
+### iii.
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+x <- c(5, 1, 3)
+x_centered <- x - mean(x)
+
+y <- c(-1, 3, 1)
+y_centered <- y - mean(y)
+
+x <- x_centered
+y <- y_centered
+# set axis limits to cover both vectors
+lim <- 
+    range(
+        c( # nolint
+            0, 
+            x, 
+            y
+        )
+    ) 
+
+    s3d <- 
+        scatterplot3d(
+            0,
+            0,
+            0, 
+            xlim = lim, 
+            ylim = lim, 
+            zlim = lim,
+            xlab="X", 
+            ylab="Y", 
+            zlab="Z", 
+            pch = "",    # reduce tick label size
+            cex.lab = 0.35,  # reduce axis label size
+            cex.axis = 0.35  # reduce axis tick size
+        )
+# add vector x (blue)
+s3d$points3d(
+    c(0, x[1]), 
+    c(0, x[2]), 
+    c(0, x[3]), 
+    type="l", 
+    col="blue", 
+    lwd=1
+)
+
+# add vector y (red)
+s3d$points3d(
+    c(0, y[1]), 
+    c(0, y[2]), 
+    c(0, y[3]), 
+    type="l", 
+    col="red", 
+    lwd=1
+)
+```
+
+Centered $x$ is `r x_centered`
+Centered $y$ is `r y_centered`
+
+### iv.
+
+Before centering, the relationship between vector x and y is affected by level of the value. Their angle is a number that is hard to interpret. After centering, the focus shifts to the variation within each vector, making it easier to compare their directions and relationships without the influence of their means, which significantly reduces the noise from constant terms but enhances correlation clarity. In our example, we can see that the two centered vectore are totally algined with exactly opposite directions.  
+
+# Problem 1(b)
+ Let $\bm{A}=\begin{bmatrix} 9 & -2 \\ -2 & 6 \end{bmatrix}$. 
+    \begin{itemize}
+        \item[i.] Determine the eigenvalues and eigenvectors of $\bm{A}$ analytically.
+        \item[ii.] Write the spectral decomposition of $\bm{A}$.
+        \item[iii.] Find $\bm{A}^{-1}$.
+        \item[iv.] Find the eigenvalues and eigenvectors of $\bm{A}^{-1}$.
+    \end{itemize}
+    
+## Solution 1(b)
+### i. Determine the eigenvalues and eigenvectors of $\bm{A}$ analytically.
+
+
+$\bm{A} - \lambda \bm{I} = \begin{bmatrix} 9 - \lambda & -2 \\ -2 & 6 - \lambda \end{bmatrix}$
+The characteristic polynomial is given by:
+
+$$\det(\bm{A} - \lambda \bm{I}) = (9 - \lambda)(6 - \lambda) - (-2)(-2) = 0$$
+
+Expanding this, we get:
+
+$$\lambda^2 - 15\lambda + 50 = 0$$
+
+Therefore $\lambda$ are the roots of the characteristic polynomial, that is, $\lambda = 10, 5$.
+
+### ii. write the spectral decomposition of $\bm{A}$.
+
+The spectral decomposition of a matrix $\bm{A}$ is given by:
+
+$$\bm{A} = \sum_{i=1}^{n} \lambda_i \bm{e}_i \bm{e}_i^T$$
+
+where $\lambda_i$ are the eigenvalues and $\bm{e}_i$ are the corresponding eigenvectors.
+
+When $\lambda = 5$, the eigenvector is $\bm{e}_1 = \begin{bmatrix} 2 \\ -1 \end{bmatrix}$.
+
+When $\lambda = 10$, the eigenvector is $\bm{e}_2 = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$.
+
+Thus $\bm{A} = 5 \bm{e}_1 \bm{e}_1^T + 10 \bm{e}_2 \bm{e}_2^T$.
+
+### iii. find $\bm{A}^{-1}$
+
+Method 1: use the inverse equation for two by two matrix:
+
+$$\bm{A}^{-1} = \frac{1}{\det(\bm{A})} \text{adj}(\bm{A})$$
+
+Method 2: we can use the spectral decomposition:
+
+Substituting the eigenvalues and eigenvectors, we get:
+
+$$\bm{A}^{-1} = \frac{1}{5} \bm{e}_1 \bm{e}_1^T + \frac{1}{10} \bm{e}_2 \bm{e}_2^T$$
+
+### iv. find the eigenvalues and eigenvectors of $\bm{A}^{-1}$.
+
+According to the properties of eigenvalues, the eigenvalues of $\bm{A}^{-1}$ are given by $\frac{1}{\lambda_i}$, where $\lambda_i$ are the eigenvalues of $\bm{A}$.
+
+Thus, the eigenvalues of $\bm{A}^{-1}$ are $\frac{1}{5}$ and $\frac{1}{10}$.
+
+The eigenvectors remain the same:
+
+When $\lambda = 5$, the eigenvector is $\bm{e}_1 = \begin{bmatrix} 2 \\ -1 \end{bmatrix}$.
+
+When $\lambda = 10$, the eigenvector is $\bm{e}_2 = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$.
+
+## Problem 1(c) 
+Let $S$ be a real symmetric $n\times n$ matrix. Show that if $S^{-1}$ exists, then it is also symmetric. 
+
+## Solution 1(c)
+If $S$ is symmetric, then $S^T = S$. 
+If $S$ is invertible, then $SS^{-1} = I$. Replace S with $S^T$ in the equation:
+$$S^T S^{-1} = I$$
+
+Thus, $(S^{T})^{-1} = S^{-1} = (S^{-1})^{T}$, which shows that $S^{-1}$ is also symmetric.
+
+## Problem 1(d)
+Show that the determinant of a square $p \times p$ matrix $\bm{A}$ can be expressed as a product of its eigenvalues $\lambda_1, \lambda_2, \cdots, \lambda_p$.  (Hint: use the spectral decomposition) 
+
+## Solution 1(d)
+Given that A is a square matrix with eigenvalues $\lambda_1, \lambda_2, \ldots, \lambda_p$, A can be factored as 
+
+$$\bm{A} = \bm{Q}\bm{\Lambda}\bm{Q^{-1}}$$
+
+Taking the determinant of both sides, we have:
+
+$$\det(\bm{A}) = \det(\bm{Q}\bm{\Lambda}\bm{Q^{-1}}) = \det(\bm{Q})\det(\bm{\Lambda})\det(\bm{Q^{-1}}) = \det(\bm{\Lambda})$$
+
+Using the property of determinants, we can express the determinant as a product of the eigenvalues:
+
+$$\det(\bm{A}) = \prod_{i=1}^{p} \lambda_i$$
+
+## Problem 1(e)
+Find the minimum and maximum value of $4 x_1^2 + 4 x_2^2 + 6 x_1 x_2$ subject to the condition $x_1^2+x_2^2=1$.  (Hint: Recognize that the constraint is restricting solutions to a vector of unit length, and rewrite the quadratic equation in matrix form, and use spectral decomposition.) 
+
+## Solution 1(e)
+We can rewrite the quadratic form as:
+
+$$\bm{x}^T \bm{A} \bm{x} = 4 x_1^2 + 4 x_2^2 + 6 x_1 x_2$$
+
+where
+
+$$\bm{A} = \begin{bmatrix} 4 & 3 \\ 3 & 4 \end{bmatrix}$$
+
+We can find the eigenvalues and eigenvectors of $\bm{A}$ to determine the extrema subject to the constraint $x_1^2 + x_2^2 = 1$.
+
+The eigenvalues of $\bm{A}$ are given by the characteristic polynomial:
+
+$$\det(\bm{A} - \lambda \bm{I}) = 0$$
+
+Calculating this, we find the eigenvalues to be $\lambda_1 = 7$ and $\lambda_2 = 1$.
+
+The corresponding eigenvectors can be found by solving the equation:
+
+$$(\bm{A} - \lambda \bm{I}) \bm{e} = 0$$
+
+For $\lambda_1 = 7$, we find the eigenvector $\bm{e}_1 = \begin{bmatrix} 1 \\ 1 \end{bmatrix}$.
+
+For $\lambda_2 = 1$, we find the eigenvector $\bm{e}_2 = \begin{bmatrix} -1 \\ 1 \end{bmatrix}$.
+
+Given that $x_1^2 + x_2^2 = 1$, the minimum value $1$ occurs at the eigenvector corresponding to the smallest eigenvalue, which is $\bm{e}_2$. The maximum value $7$ occurs at the eigenvector corresponding to the largest eigenvalue, which is $\bm{e}_1$.
+
+## Problem 1(f)
+f.  Answer the following questions using this covariance matrix: $\bm{\Sigma} = \begin{bmatrix} 1 & \rho & \rho \\ \rho & 1 & \rho \\ \rho & \rho & 1 \end{bmatrix}$ and the definition of eigenvalues: $\lvert \bm{\Sigma} - \lambda \bm{I} \rvert = 0$ and eigenvectors: $\bm{\Sigma} \bm{e}_i = \lambda_i \bm{e}_i$. 
+    i.  Derive the eigenvalues and eigenvectors of the covariance matrix from the definitions.
+    ii.  Suppose $\rho=0.5$ compute the eigenvalue and eigenvectors.  What is the linear combination that would explain the most variation?  What is the interpretation that you would give to this combination?  What is the interpretation of the other two eigenvectors?
+
+## Solution 1(f)
+### i. 
+To find the eigenvalues and eigenvectors of the covariance matrix $\bm{\Sigma}$, we start with the characteristic polynomial:
+
+$$\det(\bm{\Sigma} - \lambda \bm{I}) = 0$$
+
+Substituting the expression for $\bm{\Sigma}$, we have:
+
+$$\det\left(\begin{bmatrix} 1 - \lambda & \rho & \rho \\ \rho & 1 - \lambda & \rho \\ \rho & \rho & 1 - \lambda \end{bmatrix}\right) = 0$$
+
+Calculating the determinant, we find the characteristic polynomial:
+
+$$(1 - \lambda)^3 - 3\rho^2(1 - \lambda) + 2\rho^3 = 0$$
+
+This cubic equation can be solved for $\lambda$ to find the eigenvalues, which is $\lambda_1 = 1 + 2\rho$, $\lambda_2 = 1 - \rho$, $\lambda_3 = 1 - \rho$.
+
+The eigenvector for $\lambda_1 = 1 + 2\rho$ is proportional to $\begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$.
+
+The eigenvectors for $\lambda_2 = 1 - \rho$ (which has multiplicity 2) are any two orthogonal vectors in the subspace orthogonal to $\begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix}$, for example:
+$\begin{bmatrix} 1 \\ -1 \\ 0 \end{bmatrix}$ and $\begin{bmatrix} 1 \\ 1 \\ -2 \end{bmatrix}$ (or any orthogonal basis for this subspace).
+
+Thus, the eigenvectors are:
+\[
+\bm{e}_1 = \begin{bmatrix} 1 \\ 1 \\ 1 \end{bmatrix},\quad
+\bm{e}_2 = \begin{bmatrix} 1 \\ -1 \\ 0 \end{bmatrix},\quad
+\bm{e}_3 = \begin{bmatrix} 1 \\ 1 \\ -2 \end{bmatrix}
+\]
+
+### ii.
+Substituting $\rho = 0.5$ into the characteristic polynomial, we can find the eigenvalues are $\lambda_1 = 2$, $\lambda_2 = 0.5$, $\lambda_3 = 0.5$. The largest eigenvalue $2$ will correspond to the direction of maximum variance in the data. 
+
+The interpretation is that the first principal component (the direction of maximum variance) is a linear combination of all three original variables, indicating that they all contribute to this direction. The other two eigenvectors represent directions of lower variance, which are orthogonal to the first and to each other.
+
+## Problem 1(g)
+**[Bonus]** Recall that a $n\times n$ matrix $P$ is a projection matrix if it is symmetric and idempotent: $P^2=P$. Show that $P$ is a projection matrix if and only if it has the form $$P=U\begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix}U^T$$ for some orthogonal matrix $U: n\times n$ and some $m\le n$. 
+
+## Solution 1(g)
+
+Firstly, show that if $P$ is a projection matrix, then it can be expressed in the desired form. Since $P$ is symmetric and idempotent, we can perform an eigenvalue decomposition:
+
+$$P = Q \Lambda Q^T$$
+
+where $Q$ is an orthogonal matrix whose columns are the eigenvectors of $P$, and $\Lambda$ is a diagonal matrix containing the eigenvalues of $P$. 
+
+Since $P$ is idempotent, the eigenvalues must be either $0$ or $1$. Let $m$ be the number of $1$ eigenvalues (the rank of $P$), then we can write:
+
+$$\Lambda = \begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix}$$
+
+Thus, we have:
+
+$$P = Q \begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix} Q^T$$
+
+Now, we need to show the converse: if $P$ has the form $$P=U\begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix}U^T$$ for some orthogonal matrix $U$ and some $m\le n$, then $P$ is a projection matrix.
+
+To show this, we need to verify that $P$ is symmetric and idempotent. 
+
+1. **Symmetry**: Since $U$ is orthogonal, we have:
+
+$$P^T = \left(U\begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix}U^T\right)^T = U\begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix}U^T = P$$
+
+Thus, $P$ is symmetric.
+
+2. **Idempotence**: We need to show that $P^2 = P$:
+
+$$P^2 = \left(U\begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix}U^T\right)\left(U\begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix}U^T\right) = U\begin{pmatrix} I_m & 0 \\ 0 & 0 \end{pmatrix}U^T$$
+
+Thus, $P^2 = P$, and $P$ is idempotent.
+
+Since $P$ is both symmetric and idempotent, it is a projection matrix.
+
+\newpage
+
+## Problem 2
+
+In this question we want to examine distributions with the help of `R`. In particular, we want to examine the (i) skewness, (ii) symmetry of a distribution, (iii) outliers and (iv) non-normality of the data sets Leinhardt. The dataset can be found in the package `car`, so first install and load the package `car`. To load the Leinhardt data set use the command `data(Leinhardt)`.
+
+Conduct an exploratory analysis of the Leinhardt dataset.
+
+a.  Based upon the description of the dataset from `?Leinhardt` what relationships do you expect exist?  What do the variables mean?  How many missing values? 
+b.  Examine the variable `infant` in the data set `Leinhardt` with respect to (i)-(iv) above (in the description).
+c.  Create a single graphic to visualize the relationships amongst the variables. Comment on your findings. (Do not build a model)
+
+```{r, eval=TRUE, echo=TRUE}
+# R Hints
+data("Leinhardt")             # To read in data
+summary(Leinhardt)           # To get an overview           # Boxplot of the data
+```
+
+
+## Solution 2(a)
+
+Base on the summary statistics, I expect that there is a positive correlation between the variables. For example, countries with higher income per capita are likely to have lower infant mortality rates. The variable `infant` represents the infant mortality rate per 1000 live births, which is expected to be negatively correlated with income. The variable `income` represents the income per capita in US dollars. The variable `region` represents A factor with levels: Africa; Americas; Asia, Asia and Oceania; Europe. The variable `oil` stands for whether the country is an oil-exporting country or not. There are 4 missing values for infant while no missing values for other variables.
+
+## Solution 2(b)
+
+```{r}
+Leinhardt$infant             # To access the variable infant in the data set Leinhardt
+infant <- Leinhardt$infant   # Saves the variable income to another object
+summary(infant)              # For an overview
+hist(infant)                 # Draws a histogram
+boxplot(infant)   
+```
+
+
+# Solution 2(c)
+```{r, fig.width=4, fig.height=3}
+data("Leinhardt")
+ggplot(
+    Leinhardt, 
+    aes(
+        x = income, 
+        y = infant, 
+        color = region, 
+        shape = oil
+        )
+    ) +
+    geom_point(
+        size = 2, 
+        alpha = 0.7
+        ) +
+    labs(
+        title = "Income vs Infant Mortality Rate",
+        x = "Income per Capita",
+        y = "Infant Mortality Rate"
+    ) +
+    theme_minimal()
+```
